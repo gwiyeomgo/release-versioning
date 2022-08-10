@@ -10,7 +10,6 @@ import (
 
 const (
 	dbName        = "release-versions"
-	dataBucket    = "data"
 	releaseBucket = "release"
 )
 
@@ -35,8 +34,6 @@ func InitDB() {
 		db = dbPointer
 		utils.HandleErr(err)
 		err = db.Update(func(tx *bolt.Tx) error {
-			_, err := tx.CreateBucketIfNotExists([]byte(dataBucket))
-			utils.HandleErr(err)
 			_, err = tx.CreateBucketIfNotExists([]byte(releaseBucket))
 			return err
 		})
