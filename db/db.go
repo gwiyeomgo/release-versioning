@@ -1,8 +1,11 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
 	"gihub.com/gwiyeomgo/release-versioning/utils"
 	bolt "go.etcd.io/bbolt"
+	"strconv"
 )
 
 const (
@@ -18,11 +21,12 @@ var db *bolt.DB
 //interface 를 위한 struct
 type DB struct{}
 
-func (d DB) FindBlock(hash string) []byte {
-	return findVersion(hash)
+func (d DB) FindLastVersion() string {
+	return findLastVersion()
 }
-func (d DB) Create(hash string, data []byte) {
-	create(hash, data)
+
+func (d DB) Create() {
+	create()
 }
 
 func InitDB() {
@@ -43,22 +47,30 @@ func InitDB() {
 func Close() {
 	db.Close()
 }
-func create(key string, data []byte) {
+
+func create() {
 	err := db.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(releaseBucket))
-		err := bucket.Put([]byte(key), data)
-		return err
+		b := tx.Bucket([]byte(releaseBucket))
+		id, _ := b.NextSequence()
+		r := struct {
+			ID string
+		}{}
+		r.ID = strconv.FormatUint(id, 10)
+		buf, err := json.Marshal(r)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%s , %s\n", r.ID, buf)
+		return b.Put([]byte(r.ID), buf)
 	})
 	utils.HandleErr(err)
 }
 
-func findVersion(hash string) []byte {
-	var data []byte
-	//DB에 blocksBucket 에서 특정 블록을 찾는다
+func findLastVersion() (version string) {
 	db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(releaseBucket))
-		data = bucket.Get([]byte(hash))
+		b := tx.Bucket([]byte(releaseBucket))
+		version = strconv.FormatUint(b.Sequence(), 10)
 		return nil
 	})
-	return data
+	return version
 }

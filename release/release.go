@@ -1,27 +1,30 @@
 package release
 
+import (
+	"gihub.com/gwiyeomgo/release-versioning/db"
+)
+
 type Release struct {
 	ID string `json:"id"`
 }
 
-func Find(hash string) (*Release, error) {
-	//blockBytes := db.Block(hash)
-	/*	blockBytes := dbStorage.FindBlock(hash)
-		if blockBytes == nil {
-			return nil, ErrNotFound
-		}
-		block := &Block{}
-		block.restore(blockBytes)
-		return block, nil*/
-	return nil, nil
+type storage interface {
+	FindLastVersion() string
+	Create()
 }
 
-func createBlock(preHash string, height int, diff int) *Release {
-	/*	block := Release{
-			Hash:    "",
-		}
+var dbStorage storage = db.DB{}
 
-		persistBlock(&block)
-		return &block */
-	return nil
+func FindLastVersion() (*Release, error) {
+
+	version := dbStorage.FindLastVersion()
+	r := Release{
+		ID: version,
+	}
+
+	return &r, nil
+}
+
+func CreateVersion() {
+	dbStorage.Create()
 }

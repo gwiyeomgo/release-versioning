@@ -3,6 +3,8 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"gihub.com/gwiyeomgo/release-versioning/release"
+	"gihub.com/gwiyeomgo/release-versioning/utils"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -36,14 +38,12 @@ type errorResponse struct {
 func versions(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		//version , err := release.Find()
-		//block, err := relase.FindBlock(hash)
-		//json.NewEncoder(rw).Encode(blockchain.Blocks(blockchain.Blockchain()))
+		version, err := release.FindLastVersion()
+		utils.HandleErr(err)
+		json.NewEncoder(rw).Encode(version)
 	case "POST":
-
-		//newBlock := relase.Blockchain().AddBlock()
-
-		//rw.WriteHeader(http.StatusCreated)
+		release.CreateVersion()
+		rw.WriteHeader(http.StatusCreated)
 
 	}
 }

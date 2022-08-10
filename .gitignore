@@ -20,9 +20,6 @@
 /.idea/
 
 
-go.mod
-go.sum
-
 api.http
 
 release-versions

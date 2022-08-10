@@ -10,6 +10,7 @@ func main() {
 	defer db.Close()
 	port := flag.Int("port", 3000, "Set port of the server")
 	flag.Parse()
-	rest.Start(*port)
 	db.InitDB()
+	rest.Start(*port)
+
 }
